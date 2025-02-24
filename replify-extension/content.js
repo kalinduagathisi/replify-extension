@@ -1,8 +1,13 @@
 console.log("Replify - Content Script Loaded");
 
 function createAIButton() {
-    
-
+    const button = document.createElement('div');
+    button.className = 'T-I J-J5-Ji aoO v7 T-I-atl L3';
+    button.style.marginRight = '8px';
+    button.innerHTML = 'AI Reply';
+    button.setAttribute('role', 'button');
+    button.setAttribute('data-tooltip', 'Generate AI Reply');
+    return button;
 }
 
 function findComposeToolBar() {
@@ -21,6 +26,22 @@ function findComposeToolBar() {
     }
 }
 
+function getEmailContent() {
+    const selectors = [
+        'h7',
+        'a3s.aiL',
+        'gmail_quote',
+        '[role="presentation"]',
+    ];
+    for (const selector of selectors) {
+        const content = document.querySelector(selector);
+        if (content) {
+            return content.innerText.trim();
+        }
+        return '';
+    }
+}
+
 function injectButton() {
     const existingButton = document.querySelector('.ai-reply-btn');
     if(existingButton) existingButton.remove();
@@ -33,10 +54,18 @@ function injectButton() {
 
     console.log("Toolbar found, Creating AI Button");
     const button = createAIButton();
-    button.classList.add(".ai-reply-btn");
-    button.addEventListener('click', async () => {
 
+    button.classList.add(".ai-reply-btn");
+
+    button.addEventListener('click', async () => {
+        try {
+            button.innerHTML = 'Generating..';
+            button.disabled = true
+        } catch (error) {
+            
+        }
     });
+
     toolbar.insertBefore(button, toolbar.firstChild);
 }
 
