@@ -61,8 +61,41 @@ function injectButton() {
         try {
             button.innerHTML = 'Generating..';
             button.disabled = true
+
+            const emailContent = getEmailContent();
+            const response = await fetch('http://localhost:8080/api/email/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    emailContent: emailContent,
+                    tone: "professional"
+                })
+            })
+
+            if(!response.ok) {
+                throw new Error('API request failed!');
+            }
+
+            const generatedReply = await response.text();
+            const composeBox = document.querySelector('[role = "textbox"][g_editable = "true"]')
+
+            if (composeBox) {
+                composeBox.focus()
+                document.execCommand('insertText', false, generatedReply)
+            }
+            else {
+                console.error('Compose box was not found!')
+            }
+
         } catch (error) {
-            
+            console.error(error)
+            alert('Failed to generate reply!')
+        }
+        finally {
+            button.innerHTML = 'AI Reply'
+            button.disabled = false
         }
     });
 
